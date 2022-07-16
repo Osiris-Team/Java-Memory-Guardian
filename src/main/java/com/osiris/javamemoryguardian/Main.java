@@ -13,7 +13,7 @@ public class Main {
     public static File jdkDir = null;
     public static File heapDir = null;
     public static File jpsExe = null;
-    public static File jmapExe = null;
+    public static File jcmdExe = null;
     public static String jarName = null;
     public static int maxMB = 4000;
     public static String jarPID;
@@ -30,7 +30,7 @@ public class Main {
                 jdkDir = new File(args[i+1]);
                 if(jdkDir.isFile()) throw new IllegalArgumentException(jdkDir+" cannot be a file, must be directory!");
                 jpsExe = new File(jdkDir+"/bin/jps" + (OS.isWindows ? ".exe" : ""));
-                jmapExe = new File(jdkDir+"/bin/jmap" + (OS.isWindows ? ".exe" : ""));
+                jcmdExe = new File(jdkDir+"/bin/jcmd" + (OS.isWindows ? ".exe" : ""));
                 System.out.println("Set jdk-dir to: "+jdkDir);
                 break;
             }
@@ -86,9 +86,8 @@ public class Main {
                                 System.out.println(new Date().toString()+" PID="+jarPID+" MB="+mb+" BIGGER THAN MAX! CREATING HEAP-DUMP...");
                                 File heapDump = new File(heapDir + "/" + jarName + jarPID + ".hprof");
                                 Process pCreateHeapDump = new ProcessBuilder().command(
-                                        jmapExe.getAbsolutePath(),
-                                        "-dump:live,format=b,file=\"" +heapDump+ "\"",
-                                        jarPID).start();
+                                        jcmdExe.getAbsolutePath(),
+                                        jarPID, "GC.heap_dump", "\"" +heapDump+ "\"").start();
                                 pCreateHeapDump.waitFor();
                                 if(pCreateHeapDump.exitValue() != 0)
                                     throw new RuntimeException("Failed to create heap-dump "+heapDump+" exit code is not 0 but "+pCreateHeapDump.exitValue()+"!\n" +
