@@ -1,8 +1,8 @@
 package com.osiris.javamemoryguardian;
 
-import org.jutils.jprocesses.JProcess;
-import org.jutils.jprocesses.ProcessUtils;
-import org.jutils.jprocesses.util.OS;
+import com.osiris.jprocesses2.JProcess;
+import com.osiris.jprocesses2.ProcessUtils;
+import com.osiris.jprocesses2.util.OS;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +18,7 @@ public class Main {
     public static int maxMB = 4000;
     public static String jarPID;
     public static void main(String[] args) throws IOException {
+        // TODO save the last arguments used to a file to use them when starting without arguments
         System.out.println("jdk-dir: The jdk directory.");
         System.out.println("heap-dir: The directory to create the <jar-name><jar-pid>.hprof heap-dump file in.");
         System.out.println("jar-name: The currently running jar name to be scanned by Java-Memory-Guardian.");
