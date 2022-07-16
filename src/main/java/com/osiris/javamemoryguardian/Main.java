@@ -80,7 +80,7 @@ public class Main {
                     for (JProcess process : list) {
                         if(process.pid.equals(jarPID)){
                             jarProcess = process;
-                            int mb = Integer.parseInt(process.usedMemoryInKB) * 1000;
+                            int mb = Integer.parseInt(process.usedMemoryInKB) / 1000;
                             System.out.println(new Date().toString()+" PID="+jarPID+" MB="+mb);
                             if(mb > maxMB){
                                 System.out.println(new Date().toString()+" PID="+jarPID+" MB="+mb+" BIGGER THAN MAX! CREATING HEAP-DUMP...");
