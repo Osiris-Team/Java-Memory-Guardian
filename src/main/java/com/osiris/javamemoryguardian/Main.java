@@ -16,13 +16,15 @@ public class Main {
     public static File jcmdExe = null;
     public static String jarName = null;
     public static int maxMB = 4000;
+    public static int maxVirtualMB = -1;
     public static String jarPID;
     public static void main(String[] args) throws IOException {
         // TODO save the last arguments used to a file to use them when starting without arguments
         System.out.println("jdk-dir: The jdk directory.");
         System.out.println("heap-dir: The directory to create the <jar-name><jar-pid>.hprof heap-dump file in.");
         System.out.println("jar-name: The currently running jar name to be scanned by Java-Memory-Guardian.");
-        System.out.println("max-mb: The maximum amount of memory to wait until performing a heap-dump and exiting. Default is 4000MB.");
+        System.out.println("max-mb (optional | default 4000MB): The maximum amount of memory to wait until performing a heap-dump and exiting.");
+        System.out.println("max-virtual-mb (optional | default -1MB): The maximum amount of virtual memory to wait until performing a heap-dump and exiting.");
         System.out.println("Usage: java -jar jmg.jar jdk-dir <path> heap-dir <path> jar-name <name> max-mb <value>");
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
@@ -80,11 +82,11 @@ public class Main {
                     for (JProcess process : list) {
                         if(process.pid.equals(jarPID)){
                             jarProcess = process;
-                            int mb = (Integer.parseInt(process.usedMemoryInKB) +
-                                    Integer.parseInt(process.usedVirtualMemoryInKB)) / 1000;
+                            int mb = Integer.parseInt(process.usedMemoryInKB) / 1000;
+                            int vmb = Integer.parseInt(process.usedVirtualMemoryInKB) / 1000;
                             System.out.println(new Date().toString()+" PID="+jarPID+" MB="+mb);
-                            if(mb > maxMB){
-                                System.out.println(new Date().toString()+" PID="+jarPID+" MB="+mb+" BIGGER THAN MAX! CREATING HEAP-DUMP...");
+                            if(mb > maxMB || (maxVirtualMB >= 0 && vmb > maxVirtualMB)){
+                                System.out.println(new Date().toString()+" PID="+jarPID+" MB="+mb+" OR VMB="+vmb+" BIGGER THAN MAX! CREATING HEAP-DUMP...");
                                 File heapDump = new File(heapDir + "/" + jarName + jarPID + ".hprof");
                                 Process pCreateHeapDump = new ProcessBuilder().command(
                                         jcmdExe.getAbsolutePath(),
