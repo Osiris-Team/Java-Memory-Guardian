@@ -3,6 +3,10 @@ package com.osiris.javamemoryguardian;
 import com.osiris.jprocesses2.JProcess;
 import com.osiris.jprocesses2.ProcessUtils;
 import com.osiris.jprocesses2.util.OS;
+import oshi.SystemInfo;
+import oshi.hardware.GlobalMemory;
+import oshi.hardware.HardwareAbstractionLayer;
+import oshi.hardware.PhysicalMemory;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,6 +103,10 @@ public class Main {
         new Thread(() -> {
             try{
                 ProcessUtils processUtils = new ProcessUtils();
+                SystemInfo si = new SystemInfo();
+                HardwareAbstractionLayer hal = si.getHardware();
+                GlobalMemory memory = hal.getMemory();
+                int totalMem = (int) (memory.getTotal()/1000000);
                 while (true){
                     List<JProcess> list = processUtils.getProcesses();
                     JProcess jarProcess = null;
@@ -108,7 +116,14 @@ public class Main {
                             jarProcess = process;
                             int mb = Integer.parseInt(process.usedMemoryInKB) / 1000;
                             int vmb = Integer.parseInt(process.usedVirtualMemoryInKB) / 1000;
-                            System.out.println(new Date().toString()+" PID="+jarPID+" MB="+mb+" VMB="+vmb);
+                            int freeMem = (int) (memory.getAvailable()/1000000);
+                            int usedMem = totalMem - freeMem;
+                            int totalVirtualMem = (int) (memory.getVirtualMemory().getVirtualMax() / 1000000);
+                            int usedVirtualMem = (int) (memory.getVirtualMemory().getVirtualInUse() /1000000);
+                            int freeVirtualMem = totalVirtualMem - usedVirtualMem;
+
+                            System.out.println(new Date().toString()+" PID="+jarPID+" MB="+mb+" VMB="+vmb+"\n"+
+                                    "USAGE="+usedMem+ "/"+totalMem+"MB FREE="+freeMem+"MB USAGE-VIRTUAL="+usedVirtualMem+ "/"+totalVirtualMem+"MB FREE="+freeVirtualMem+"MB ");
                             if(mb > maxMB || (maxVirtualMB >= 0 && vmb > maxVirtualMB)){
                                 System.out.println(new Date().toString()+" PID="+jarPID+" MB="+mb+" OR VMB="+vmb+" BIGGER THAN MAX! CREATING HEAP-DUMP...");
                                 File heapDump = new File(heapDir + "/" + jarName + jarPID + ".hprof");
