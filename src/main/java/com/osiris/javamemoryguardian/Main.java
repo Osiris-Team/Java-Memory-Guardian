@@ -107,6 +107,8 @@ public class Main {
                 HardwareAbstractionLayer hal = si.getHardware();
                 GlobalMemory memory = hal.getMemory();
                 int totalMem = (int) (memory.getTotal()/1000000);
+                int startMB = Integer.parseInt(processUtils.getByPID(jarPID).usedMemoryInKB) / 1000;
+                int startVMB = Integer.parseInt(processUtils.getByPID(jarPID).usedVirtualMemoryInKB) / 1000;
                 while (true){
                     List<JProcess> list = processUtils.getProcesses();
                     JProcess jarProcess = null;
@@ -122,8 +124,11 @@ public class Main {
                             int usedVirtualMem = (int) (memory.getVirtualMemory().getVirtualInUse() / 1000000);
                             int freeVirtualMem = totalVirtualMem - usedVirtualMem;
 
-                            System.out.println(new Date().toString()+" PID="+jarPID+" MB="+mb+" VMB="+vmb+"\n"+
-                                    "USAGE="+usedMem+ "/"+totalMem+"MB FREE="+freeMem+"MB USAGE-VIRTUAL="+usedVirtualMem+ "/"+totalVirtualMem+"MB FREE="+freeVirtualMem+"MB ");
+
+                            System.out.println(new Date().toString()+"\n" +
+                                    "PROCESS("+jarName+"/"+jarPID+"): MB="+mb+" VIRTUAL-MB="+vmb+"\n"+
+                                    "CHANGE SINCE START: MB="+(mb-startMB)+" VIRTUAL-MB="+(vmb-startVMB)+"\n"+
+                                    "SYSTEM: USAGE="+usedMem+ "/"+totalMem+"MB FREE="+freeMem+"MB USAGE-VIRTUAL="+usedVirtualMem+ "/"+totalVirtualMem+"MB FREE="+freeVirtualMem+"MB ");
                             if(mb > maxMB || (maxVirtualMB >= 0 && vmb > maxVirtualMB)){
                                 System.out.println(new Date().toString()+" PID="+jarPID+" MB="+mb+" OR VMB="+vmb+" BIGGER THAN MAX! CREATING HEAP-DUMP...");
                                 File heapDump = new File(heapDir + "/" + jarName + jarPID + ".hprof");
