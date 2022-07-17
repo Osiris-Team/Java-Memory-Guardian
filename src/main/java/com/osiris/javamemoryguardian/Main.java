@@ -26,6 +26,8 @@ public class Main {
         System.out.println("max-mb (optional | default 4000MB): The maximum amount of memory to wait until performing a heap-dump and exiting.");
         System.out.println("max-virtual-mb (optional | default -1MB): The maximum amount of virtual memory to wait until performing a heap-dump and exiting.");
         System.out.println("Usage: java -jar jmg.jar jdk-dir <path> heap-dir <path> jar-name <name> max-mb <value>");
+
+        // JDK-DIR
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             if(arg.contains("jdk-dir")){
@@ -39,6 +41,7 @@ public class Main {
         }
         if(jdkDir == null) throw new NullPointerException("jdk-dir cannot be null!");
 
+        // HEAP-DIR
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             if(arg.contains("heap-dir")){
@@ -50,6 +53,7 @@ public class Main {
         }
         if(heapDir == null) throw new NullPointerException("heap-dir cannot be null!");
 
+        // JAR-NAME
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             if(arg.contains("jar-name")){
@@ -72,6 +76,24 @@ public class Main {
             throw new NullPointerException("Failed to find a running process named '"+jarName+"' via jps. Full output below:\n"
                     +pCheckJarNameOutput);
 
+        // MAX-MB
+        for (String arg : args) {
+            if (arg.contains("max-mb")) {
+                maxMB = Integer.parseInt(arg);
+                System.out.println("Set max-mb to: " + maxMB);
+                break;
+            }
+        }
+
+        //MAX-VMB
+        for (String arg : args) {
+            if (arg.contains("max-virtual-mb")) {
+                maxVirtualMB = Integer.parseInt(arg);
+                System.out.println("Set max-virtual-mb to: " + maxVirtualMB);
+                break;
+            }
+        }
+
         new Thread(() -> {
             try{
                 ProcessUtils processUtils = new ProcessUtils();
@@ -84,7 +106,7 @@ public class Main {
                             jarProcess = process;
                             int mb = Integer.parseInt(process.usedMemoryInKB) / 1000;
                             int vmb = Integer.parseInt(process.usedVirtualMemoryInKB) / 1000;
-                            System.out.println(new Date().toString()+" PID="+jarPID+" MB="+mb);
+                            System.out.println(new Date().toString()+" PID="+jarPID+" MB="+mb+" VMB="+vmb);
                             if(mb > maxMB || (maxVirtualMB >= 0 && vmb > maxVirtualMB)){
                                 System.out.println(new Date().toString()+" PID="+jarPID+" MB="+mb+" OR VMB="+vmb+" BIGGER THAN MAX! CREATING HEAP-DUMP...");
                                 File heapDump = new File(heapDir + "/" + jarName + jarPID + ".hprof");
