@@ -119,7 +119,7 @@ public class Main {
                             int freeMem = (int) (memory.getAvailable()/1000000);
                             int usedMem = totalMem - freeMem;
                             int totalVirtualMem = (int) (memory.getVirtualMemory().getVirtualMax() / 1000000);
-                            int usedVirtualMem = (int) (memory.getVirtualMemory().getVirtualInUse() /1000000);
+                            int usedVirtualMem = (int) (memory.getVirtualMemory().getVirtualInUse() / 1000000);
                             int freeVirtualMem = totalVirtualMem - usedVirtualMem;
 
                             System.out.println(new Date().toString()+" PID="+jarPID+" MB="+mb+" VMB="+vmb+"\n"+
