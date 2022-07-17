@@ -77,19 +77,21 @@ public class Main {
                     +pCheckJarNameOutput);
 
         // MAX-MB
-        for (String arg : args) {
-            if (arg.contains("max-mb")) {
-                maxMB = Integer.parseInt(arg);
-                System.out.println("Set max-mb to: " + maxMB);
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if(arg.contains("max-mb")){
+                maxMB =  Integer.parseInt(args[i+1]);
+                System.out.println("Set max-mb to: "+maxMB);
                 break;
             }
         }
 
         //MAX-VMB
-        for (String arg : args) {
-            if (arg.contains("max-virtual-mb")) {
-                maxVirtualMB = Integer.parseInt(arg);
-                System.out.println("Set max-virtual-mb to: " + maxVirtualMB);
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if(arg.contains("max-virtual-mb")){
+                maxVirtualMB =  Integer.parseInt(args[i+1]);
+                System.out.println("Set max-virtual-mb to: "+maxVirtualMB);
                 break;
             }
         }
